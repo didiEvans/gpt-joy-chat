@@ -1,10 +1,10 @@
+<p align="center">
+    <a href="https://joychat.cceven.cc" target="_blank" rel="noopener noreferrer">
+        <img width="100" src="doc/pics/logo.png" alt="Halo logo">
+    </a>
+</p>
 
-
-<div style="text-align: center;">
-  <img src="doc/pics/logo.png" alt="图片描述">
-</div>
-
-<div style="text-align: center;">JoyChat-AI助手,界面美观,强大易用,可快速部署的GPT-Web客户端</div>
+> JoyChat-AI助手,界面美观,强大易用,可快速部署的GPT-Web客户端
 
 ## 鸣谢:
 
