@@ -1,0 +1,6 @@
+server:
+  port: 9266
+spring:
+  profiles:
+    active: prod
+

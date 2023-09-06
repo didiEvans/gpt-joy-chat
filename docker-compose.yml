@@ -1,0 +1,17 @@
+version: '3'
+services:
+  # Java 服务
+  joychat-java-gpt:
+    image: ankerevans/joy-chat-java:latest
+    container_name: joy-chat
+    environment:
+      - spring.profiles.active=dev
+    ports:
+      - "9266:9266"
+    restart: on-failure
+    networks:
+      gpt_network:
+
+networks:
+  gpt_network:
+

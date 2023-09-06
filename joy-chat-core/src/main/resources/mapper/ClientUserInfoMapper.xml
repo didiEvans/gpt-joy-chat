@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.ClientUserInfoMapper">
+
+    <sql id="base_column">
+        id, nickname, description, avatar_version, last_login_ip, invite_uid, email_address, mobile_phone, password, invite_code,
+        chat_count, create_time, update_time, registry_type, status
+    </sql>
+
+    <select id="queryPage" resultType="cloud.cstream.chat.core.domain.vo.ClientUserPageVO">
+        SELECT
+            a.id,
+            a.nickname,
+            a.mobile_phone,
+            a.email_address,
+            a.chat_count,
+            a.create_time,
+            a.status,
+            IFNULL( t1.vas_name, '免费用户' ) AS currentVasPkg
+        FROM
+        `client_user_info` a
+        LEFT JOIN (
+        SELECT
+        t2.uid,
+        t1.vas_name
+        FROM
+        vas_pkg t1
+        LEFT JOIN vas_recharge_record t2 ON t1.id = t2.vas_pkg_id
+            WHERE
+            t2.expire_time > NOW()
+            ORDER BY
+            t2.expire_time DESC
+            LIMIT 1
+        ) t1 ON a.id = t1.uid
+        <where>
+            <if test="query.account != null and query.account != ''">
+                and (a.email_address like concat('%',#{query.account},'%') or a.mobile_phone like concat('%',#{query.account},'%'))
+            </if>
+        </where>
+        ORDER BY
+        a.create_time DESC
+    </select>
+
+    <select id="queryClientUserInfoByEmailAccount"
+            resultType="cloud.cstream.chat.core.domain.entity.ClientUserInfoDO">
+        select <include refid="base_column"/> from client_user_info where email_address = #{email}
+    </select>
+    <select id="queryClientUserInfoByIdentification"
+            resultType="cloud.cstream.chat.core.domain.entity.ClientUserInfoDO">
+        select <include refid="base_column"/> from client_user_info where (email_address = #{userName} or mobile_phone = #{userName})
+    </select>
+    <select id="queryClientUserInfoByMobilePhone"
+            resultType="cloud.cstream.chat.core.domain.entity.ClientUserInfoDO">
+        select <include refid="base_column"/> from client_user_info where mobile_phone = #{phone}
+    </select>
+</mapper>

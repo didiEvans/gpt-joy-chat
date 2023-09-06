@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.CardIssuingMapper">
+
+    <insert id="batchInsert">
+
+        insert into card_issuing (`card_no`, `card_pwd`, `vas_pkg_id`, `create_user_id`) values
+        <foreach collection="dos" item="do" separator=",">
+            (#{do.cardNo}, #{do.cardPwd}, #{do.vasPkgId}, #{do.createUserId})
+        </foreach>
+
+
+    </insert>
+    <select id="pageQuery" resultType="cloud.cstream.chat.core.domain.vo.CardIssuingVO">
+        SELECT
+            a.card_no,
+            a.card_pwd,
+            c.vas_name AS vasPkgName,
+            d.nick_name AS createUsername,
+            IF(a.converted = 1,'已核销','待核销') AS convertStatus,
+            e.nickname AS convertUser,
+            a.create_time,
+            b.converted_time AS convertTime
+        FROM
+        card_issuing a
+        LEFT JOIN card_issuing_converted_record b ON a.id = b.card_id
+        LEFT JOIN vas_pkg c ON a.vas_pkg_id = c.id
+        LEFT JOIN sys_user d ON a.create_user_id = d.id
+        LEFT JOIN client_user_info e ON b.converted_uid = e.id
+        <where>
+            <if test="query.convertUserAccount != null and query.convertUserAccount != ''">
+                and (e.email_address like concat ('%', #{query.convertUserAccount}, '%') or e.mobile_phone like concat ('%', #{query.convertUserAccount}, '%'))
+            </if>
+            <if test="query.convertUser != null and query.convertUser != ''">
+                and e.nickname like concat ('%', #{query.convertUser}, '%')
+            </if>
+            <if test="query.converted != null">
+                and a.converted = #{query.converted}
+            </if>
+            <if test="query.vasPkgId != null">
+                and a.vas_pkg_id = #{query.vasPkgId}
+            </if>
+        </where>
+        ORDER BY a.converted DESC
+    </select>
+</mapper>

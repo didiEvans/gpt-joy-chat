@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.VasPkgMapper">
+
+    <update id="updateAllChatVasPkgToTargetStatus">
+        UPDATE vas_pkg SET status = #{targetStatus} WHERE type = 1
+    </update>
+    <select id="queryChatVasPkgEnableStatus" resultType="java.lang.Integer">
+        SELECT `status` FROM vas_pkg WHERE type = 1 LIMIT 1
+    </select>
+</mapper>

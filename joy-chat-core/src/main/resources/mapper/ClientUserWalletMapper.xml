@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.ClientUserWalletMapper">
+
+    <sql id="table">
+        id, uid, points, create_time, update_time
+    </sql>
+
+    <select id="selectByUid" resultType="cloud.cstream.chat.core.domain.entity.ClientUserWalletDO">
+        SELECT <include refid="table"/> FROM client_user_wallet WHERE uid = #{userId}
+    </select>
+</mapper>

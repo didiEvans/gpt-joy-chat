@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.FrontUserInviteTaskRecordMapper">
+
+    <select id="selectInviteUserCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(DISTINCT invitee_uid) AS count
+        FROM
+            front_user_invite_task_record
+        WHERE
+            inviter_uid = #{uid}
+    </select>
+    <select id="queryInviteeList" resultType="cloud.cstream.chat.core.domain.vo.UserInviteeListVO">
+        SELECT
+        b.nickname AS nickname,
+        b.create_time AS registryTime,
+        a.task_code AS stage,
+        a.complete_time AS stageCompleteTime,
+        a.reward AS rewardNum
+        FROM
+        front_user_invite_task_record a
+        LEFT JOIN client_user_info b ON a.invitee_uid = b.id
+        WHERE
+        a.inviter_uid = #{query.inviterUId}
+        AND a.completed = 1
+        <if test="query.nickname != null and query.nickname != '' ">
+            AND b.nickname link concat('%', #{query.nickname}, '%')
+        </if>
+        <if test="query.stage != null">
+            AND b.task_code = #{query.stage}
+        </if>
+    </select>
+</mapper>

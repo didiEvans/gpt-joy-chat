@@ -1,0 +1,1 @@
+package cloud.cstream.chat.client.domain.query;

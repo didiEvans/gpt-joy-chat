@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.VasOrderMapper">
+
+    <select id="queryPage" resultType="cloud.cstream.chat.core.domain.vo.VasOrderPageVO">
+        SELECT
+        a.id,
+        a.order_no,
+        a.payment_mode,
+        a.transaction_amount,
+        a.transaction_type,
+        a.transaction_time,
+        a.pay_status,
+        c.nickname AS username,
+        b.vas_name AS vasPkgName,
+        a.create_time
+        FROM
+        vas_order a
+        LEFT JOIN vas_pkg b ON a.vas_id = b.id
+        LEFT JOIN client_user_info c ON a.uid = c.id
+        <where>
+            <if test="query.username != null and query.username != ''">
+                and (c.mobile_phone like concat('%',#{query.username},'%') or c.email_address like concat('%',#{query.username},'%'))
+            </if>
+        </where>
+    </select>
+</mapper>

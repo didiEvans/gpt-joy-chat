@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.ChatMessageMapper">
+
+    <select id="queryPage" resultType="cloud.cstream.chat.core.domain.vo.ChatMessageVO">
+        SELECT
+        a.message_id,
+        a.parent_message_id,
+        a.question_context_count,
+        a.message_type,
+        a.chat_room_id,
+        a.api_type,
+        a.model_name,
+        a.`ip`,
+        a.`content`,
+        a.`status`,
+        a.`create_time`,
+        b.nickname AS sendUserName
+        FROM
+        chat_message a
+        INNER JOIN client_user_info b ON a.user_id = b.id
+        <where>
+            <if test="query.chatRoomId != null">
+                and a.chat_room_id = #{query.chatRoomId}
+            </if>
+            <if test="query.ip != null">
+                and a.ip like concat ('%',#{query.ip} ,'%')
+            </if>
+            <if test="query.content != null">
+                and a.content like concat ('%',#{query.content} ,'%')
+            </if>
+            <if test="query.sendUserName != null">
+                and b.nickname like concat ('%', #{query.sendUserName}, '%')
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+</mapper>

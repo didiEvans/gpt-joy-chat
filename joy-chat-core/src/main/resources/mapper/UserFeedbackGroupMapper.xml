@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cloud.cstream.chat.core.mapper.UserFeedbackGroupMapper">
+
+    <select id="queryGroupPage" resultType="cloud.cstream.chat.core.domain.vo.UserFeedbackGroupPageVO">
+        SELECT
+            a.id,
+            a.title,
+            a.create_time,
+            a.resolved,
+            COUNT(CASE WHEN b.`read` = 0 AND b.uid = #{userId} AND b.role = 0 THEN 1 ELSE NULL END) AS unread_count
+        FROM
+            user_feedback_group a
+                LEFT JOIN user_feedback_details b ON a.id = b.group_id
+        WHERE
+            a.uid = #{userId}
+        GROUP BY
+            a.id, a.title, a.create_time
+        ORDER BY
+            a.create_time DESC
+    </select>
+    <select id="userFeedbackPage" resultType="cloud.cstream.chat.core.domain.vo.UserFeedbackAdminGroupPageVO">
+        SELECT
+        a.id,
+        a.title,
+        a.create_time,
+        a.resolved,
+        cui.nickname AS feedbackUser,
+        cui.mobile_phone AS feedbackUserPhone,
+        cui.email_address AS feedbackUserEmail,
+        EXISTS ( SELECT 1 FROM user_feedback_details t WHERE t.group_id = a.id AND t.role = 1 AND t.`read` = 0 ) AS hasUnread
+        FROM
+        user_feedback_group a
+        INNER JOIN client_user_info cui ON a.uid = cui.id
+        <where>
+            <if test="query.hasUnread">
+                EXISTS (SELECT 1 FROM user_feedback_details t WHERE t.group_id = a.id AND t.`read` = 0)
+            </if>
+            <if test="query.name != null and query.name != ''">
+                AND cui.nickname LIKE CONCAT('%', #{query.name}, '%')
+            </if>
+            <if test="query.resolved != null">
+                AND a.resolved = #{query.resolved}
+            </if>
+        </where>
+        ORDER BY
+        a.create_time DESC
+    </select>
+</mapper>

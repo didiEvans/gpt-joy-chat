@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.cstream.chat.core.mapper.PromptLibMapper">
+
+    <sql id="base_column">
+        id,title, summary, avatar, prompt_content, tool_flag, type, contribute_uid, create_time, update_time
+    </sql>
+    <insert id="batchInsert">
+        insert into prompt_lib (title, summary, prompt_content) values
+        <foreach collection="coll" item="obj" separator=",">
+            (#{obj.title}, #{obj.summary}, #{obj.promptContent})
+        </foreach>
+    </insert>
+
+    <select id="pageQuery" resultType="cloud.cstream.chat.core.domain.vo.PromptLibVO">
+        SELECT
+            a.id,
+            a.title,
+            a.prompt_content,
+            a.summary,
+            a.create_time,
+            CASE WHEN a.type = 0 THEN 'JoyChat' ELSE b.nickname END AS contributor
+        FROM
+        prompt_lib a
+        LEFT JOIN client_user_info b ON a.contribute_uid = b.id
+        <where>
+            <if test="query.title != null and query.title != ''">
+                and title like concat('%', #{query.title},'%')
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+    <select id="selectToolboxPrompt" resultType="cloud.cstream.chat.core.domain.vo.PromptLibVO">
+        select id,title, summary, avatar, prompt_content from prompt_lib where tool_flag = 1 and type = 0
+    </select>
+    <select id="selectClientUserToolPage" resultType="cloud.cstream.chat.core.domain.vo.PromptLibVO">
+        select id,title, summary, avatar, prompt_content from prompt_lib where contribute_uid = #{query.uid} and type = 1
+    </select>
+    <select id="selectByUserIdAndPk" resultType="cloud.cstream.chat.core.domain.entity.PromptLibDO">
+        select <include refid="base_column"/> from prompt_lib where id = #{id} and contribute_uid = #{userId}
+    </select>
+</mapper>

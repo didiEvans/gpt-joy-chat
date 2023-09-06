@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cloud.cstream.chat.core.mapper.UserFeedbackDetailsMapper">
+
+
+
+    <update id="readAll">
+        UPDATE user_feedback_details
+        SET `read` = 1
+        WHERE group_id = #{gId} and role = #{role}
+    </update>
+
+    <select id="queryDetailsList" resultType="cloud.cstream.chat.core.domain.vo.UserFeedbackDetailsPageVO">
+        SELECT
+        id,
+        content,
+        group_id,
+        `role`,
+        create_time
+        FROM
+        user_feedback_details
+        WHERE
+        group_id = #{gId}
+        <if test="userId != null">
+         and  uid = #{userId}
+        </if>
+        ORDER BY id ASC
+    </select>
+    <select id="selectUnreadCount" resultType="java.lang.Integer">
+        SELECT COUNT( * ) AS total FROM user_feedback_details  WHERE (uid = #{userId} AND `read` = 0 AND role = 0)
+    </select>
+</mapper>

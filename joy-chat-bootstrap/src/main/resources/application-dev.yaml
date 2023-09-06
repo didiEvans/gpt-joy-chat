@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: ${JDBC_URL:jdbc:mysql://localhost:3306/joy_chat?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${USERNAME}
+    password: ${PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_ADDR}
+      port: ${REDIS_PORT}
+      password: ${REDIS_AUTH}
+      database: ${REDIS_BASE_IDX}
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*Mapper.xml
+  globalConfig:
+    banner: false
+  configuration:
+    # 控制台打印 SQL
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+# 邮箱验证相关
+email:
+  # SMTP服务器地址
+  host: ${EMAIL_HOST}
+  # 服务器一般默认 25 端口
+  port: ${EMAIL_PORT}
+  # 邮箱地址
+  from: ${EMAIL_FROM}
+  # 用户名，发件人前缀
+  user: ${EMAIL_USER}
+  # 如果要授权码，这里就是传授权码
+  pass: ${EMAIL_PASS}
+  # 是否需要授权，决定是否要设置授权码
+  auth: ${EMAIL_AUTH}
+  # 邮箱验证码有效期（单位，分钟）
+  verifyCodeExpireMinutes: ${EMAIL_CODE_EXPIRE_MINUTES}
+  # 邮箱验证，跳转地址路径
+  verificationRedirectUrl: ${EMAIL_VERIFY_REDIRECT_URL}
+sa-token:
+  # 前端用户登录，用于加密 JWT
+  jwt-secret-key: ${JWT_SECRET}
+  # JWT 有效期
+  timeout: ${LOGIN_TIMEOUT_SECONDS}
+  token-name: satoken
+  is-share: true
+  is-print: false
+extend:
+  baseWebUrl: ${INVITER_REDIRECT_URL}
+  qrCodeUrls:
+    - ${FILE_ONE}
+    - ${FILE_TWO}
+
+# 百度文本审核
+baidu-content-review:
+  clientId: ${CLIENT_ID}
+  clientSecret: ${CLIENTSECRET}
+  accessTokenUrl: https://aip.baidubce.com/oauth/2.0/token
+  doCheckActionUrl: https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined
+
+cos:
+  region: ap-chengdu
+  bucketName: ${BUCKET}
+  secretId: ${SECRET_ID}
+  secretKey: ${SECRET_KEY}
